@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RとP計算機</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  .card {
+    background: #1e293b;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 420px;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0 0 16px;
+    text-align: center;
+  }
+  .formula {
+    font-family: monospace;
+    background: #0b1220;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    margin: 12px 0 6px;
+    color: #94a3b8;
+  }
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: #0b1220;
+    color: #e2e8f0;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  input:focus {
+    outline: none;
+    border-color: #38bdf8;
+  }
+  button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  button:active {
+    transform: scale(0.98);
+  }
+  .result {
+    margin-top: 22px;
+    padding: 16px;
+    background: #0b1220;
+    border-radius: 8px;
+    display: none;
+  }
+  .result.show { display: block; }
+  .result div {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 18px;
+  }
+  .result span:last-child {
+    font-weight: 700;
+    color: #38bdf8;
+  }
+  .error {
+    color: #f87171;
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>RとP 計算機</h1>
+  <div class="formula">
+    R = log(S1/S2)<br>
+    P = (O - R·S2·K) / (S1 - S2·K)
+  </div>
+
+  <label>O</label>
+  <input id="O" type="number" step="any" placeholder="例: 100">
+
+  <label>S1</label>
+  <input id="S1" type="number" step="any" placeholder="例: 10">
+
+  <label>S2</label>
+  <input id="S2" type="number" step="any" placeholder="例: 2">
+
+  <label>K</label>
+  <input id="K" type="number" step="any" placeholder="例: 3">
+
+  <button onclick="calc()">計算する</button>
+  <div id="err" class="error"></div>
+
+  <div id="result" class="result">
+    <div><span>R</span><span id="R">-</span></div>
+    <div><span>P</span><span id="P">-</span></div>
+  </div>
+</div>
+
+<script>
+function calc() {
+  const O = parseFloat(document.getElementById('O').value);
+  const S1 = parseFloat(document.getElementById('S1').value);
+  const S2 = parseFloat(document.getElementById('S2').value);
+  const K = parseFloat(document.getElementById('K').value);
+  const err = document.getElementById('err');
+  const resBox = document.getElementById('result');
+
+  err.style.display = 'none';
+  resBox.classList.remove('show');
+
+  if ([O,S1,S2,K].some(v => isNaN(v))) {
+    err.textContent = '全部の値を入力してね';
+    err.style.display = 'block';
+    return;
+  }
+  if (S2 <= 0 || S1/S2 <= 0) {
+    err.textContent = 'S2>0 かつ S1/S2>0 じゃないとlog計算できないよ';
+    err.style.display = 'block';
+    return;
+  }
+  const denom = S1 - S2 * K;
+  if (denom === 0) {
+    err.textContent = '分母 S1 - S2*K が0になるのでPは計算不可';
+    err.style.display = 'block';
+    return;
+  }
+
+  const R = Math.log(S1 / S2); // 自然対数
+  const P = (O - R * S2 * K) / denom;
+
+  document.getElementById('R').textContent = R.toFixed(6);
+  document.getElementById('P').textContent = P.toFixed(6);
+  resBox.classList.add('show');
+}
+</script>
+</body>
+</html>
